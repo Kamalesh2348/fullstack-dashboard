@@ -5,62 +5,6 @@ import {
   Pie,
   Cell,
   Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-
-const COLORS = ["#2563eb", "#16a34a", "#9333ea", "#f97316", "#dc2626"];
-
-export default function PieChartCard({
-  title,
-  data,
-}: {
-  title: string;
-  data: { name: string; value: number }[];
-}) {
-  const chartData = data.filter((item) => item.value > 0);
-
-  return (
-    <section className="glass-card rounded-2xl shadow-xl p-5 card-hover mb-6">
-      <h2 className="text-xl font-bold mb-4">{title}</h2>
-
-      {chartData.length === 0 ? (
-        <div className="h-72 flex items-center justify-center text-gray-500">
-          No chart data available
-        </div>
-      ) : (
-        <div className="w-full h-72">
-          <ResponsiveContainer>
-            <PieChart>
-              <Pie
-                data={chartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={90}
-                label
-              >
-                {chartData.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-    </section>
-  );
-}"use client";
-
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
   Legend,
   ResponsiveContainer,
 } from "recharts";
@@ -102,7 +46,7 @@ function groupCount(data: any[], key: string, limit = 5) {
   return top;
 }
 
-export default function ClearPieChart({
+export default function PieChartCard({
   title,
   data,
   dataKeyName,
@@ -113,34 +57,46 @@ export default function ClearPieChart({
 }) {
   const chartData = groupCount(data, dataKeyName, 5);
 
+  if (!chartData.length) {
+    return (
+      <div className="chart-card">
+        <h3>{title}</h3>
+        <div className="empty-chart">
+          No chart data available
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="chart-card">
       <h3>{title}</h3>
 
-      <div className="pie-chart-box">
-        <ResponsiveContainer width="100%" height={280}>
-          <PieChart>
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={90}
-              label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(0)}%`
-              }
-            >
-              {chartData.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
+      <ResponsiveContainer width="100%" height={320}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={110}
+            label={({ name, percent }) =>
+              `${name} ${(percent * 100).toFixed(0)}%`
+            }
+          >
+            {chartData.map((_, index) => (
+              <Cell
+                key={index}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
 
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 }
