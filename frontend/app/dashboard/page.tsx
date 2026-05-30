@@ -44,7 +44,11 @@ function getPieData(data: any[], key: string) {
 }
 
 async function fetchJson(url: string) {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: {
+      "ngrok-skip-browser-warning": "true"
+    }
+  });
 
   if (!res.ok) {
     console.error("API Error:", url, res.status);

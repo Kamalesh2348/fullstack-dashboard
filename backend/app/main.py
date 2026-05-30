@@ -1,9 +1,7 @@
 import os
 from dotenv import load_dotenv
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.routers import users
 from app.routers import products
 from app.routers import orders
@@ -17,16 +15,22 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 app = FastAPI(title="Fullstack Dashboard API")
 
+# CORS Configuration
+origins = [
+    "http://localhost:3000",
+    "https://fullstack-dashboard-kappa.vercel.app",
+]
+
+if FRONTEND_URL:
+    origins.append(FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=
-        FRONTEND_URL,
-        
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 def home():
@@ -43,7 +47,6 @@ def home():
             "search_analytics": "/search/analytics?keyword=electronics",
         },
     }
-
 
 app.include_router(users.router)
 app.include_router(products.router)
