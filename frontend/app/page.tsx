@@ -2,46 +2,95 @@
 
 import { useState } from "react";
 
-export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const API_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  const handleLogin = (e: React.FormEvent) => {
+export default function LoginPage() {
+  const [username, setUsername] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const handleLogin = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
-    if (
-      username === "admin" &&
-      password === "admin123"
-    ) {
-      localStorage.setItem("isLoggedIn", "true");
-      window.location.href = "/dashboard";
-    } else {
-      setError("Invalid Username or Password");
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        `${API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem(
+          "isLoggedIn",
+          "true"
+        );
+
+        window.location.href =
+          "/dashboard";
+      } else {
+        setError(
+          data.detail ||
+            "Login failed"
+        );
+      }
+    } catch (err) {
+      setError(
+        "Unable to connect to server"
+      );
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="login-page">
-      <form className="login-card" onSubmit={handleLogin}>
+      <form
+        className="login-card"
+        onSubmit={handleLogin}
+      >
         <h1>🚀 Dashboard Login</h1>
-
-        <p className="login-subtitle">
-          Sign in to access your analytics dashboard
-        </p>
 
         <input
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) =>
+            setUsername(e.target.value)
+          }
         />
 
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
         />
 
         {error && (
@@ -50,8 +99,13 @@ export default function LoginPage() {
           </p>
         )}
 
-        <button type="submit">
-          Login
+        <button
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Logging in..."
+            : "Login"}
         </button>
       </form>
     </div>
