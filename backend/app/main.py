@@ -8,6 +8,8 @@ from app.routers import orders
 from app.routers import order_items
 from app.routers import search
 from app.routers import dashboard
+from app.routers import auth
+
 
 load_dotenv()
 
@@ -54,3 +56,4 @@ app.include_router(orders.router)
 app.include_router(order_items.router)
 app.include_router(search.router)
 app.include_router(dashboard.router)
+app.include_router(auth.router)
